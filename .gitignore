@@ -10,3 +10,4 @@ backend/django_app/media/
 */config.json
 .idea/
 .vscode/
+*.ods#
