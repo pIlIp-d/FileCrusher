@@ -3,9 +3,9 @@ import subprocess
 import sys
 from subprocess import CalledProcessError
 
-from src.compressor.config import ADVPNG_PATH
-from src.compressor.file_operations import copy_file, check_if_valid_image, get_file_size
-from src.compressor.processor import processor
+from src.file_crusher.config import ADVPNG_PATH
+from src.file_crusher.file_operations import copy_file, check_if_valid_image, get_file_size
+from src.file_crusher.processor import processor
 
 
 class ADVPNGCompressor:

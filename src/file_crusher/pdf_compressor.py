@@ -6,14 +6,14 @@ from enum import Enum
 from io import TextIOWrapper
 
 from src.batch_processor import batch_process_files_async
-from src.compressor.config import TESSERACT_PATH
-from src.compressor.converter.image_to_pdf_converter import ImagesToPdfConverter
-from src.compressor.converter.pdf_merger import merge_pdf_files
-from src.compressor.converter.pdf_to_image_converter import PdfToImageConverter
-from src.compressor.cpdfsqueeze_compressor import CPdfSqueezeCompressor
-from src.compressor.file_operations import get_file_size, get_files_in_folder, get_and_create_temp_folder
-from src.compressor.png_compressor import PNGCompressor
-from src.compressor.processor import processor
+from src.file_crusher.config import TESSERACT_PATH
+from src.file_crusher.converter.image_to_pdf_converter import ImagesToPdfConverter
+from src.file_crusher.converter.pdf_merger import merge_pdf_files
+from src.file_crusher.converter.pdf_to_image_converter import PdfToImageConverter
+from src.file_crusher.cpdfsqueeze_compressor import CPdfSqueezeCompressor
+from src.file_crusher.file_operations import get_file_size, get_files_in_folder, get_and_create_temp_folder
+from src.file_crusher.png_compressor import PNGCompressor
+from src.file_crusher.processor import processor
 
 
 class PDFCompressor:

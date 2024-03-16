@@ -2,12 +2,12 @@ import os
 import sys
 import time
 
-from src.compressor.CompressionPostprocessor import CompressionPostprocessor
-from src.compressor.advpng_compressor import ADVPNGCompressor
-from src.compressor.file_operations import copy_file
-from src.compressor.pngcrush_compressor import PNGCrushCompressor
-from src.compressor.pngquant_compressor import PNGQuantCompressor
-from src.compressor.processor import processor
+from src.file_crusher.CompressionPostprocessor import CompressionPostprocessor
+from src.file_crusher.advpng_compressor import ADVPNGCompressor
+from src.file_crusher.file_operations import copy_file
+from src.file_crusher.pngcrush_compressor import PNGCrushCompressor
+from src.file_crusher.pngquant_compressor import PNGQuantCompressor
+from src.file_crusher.processor import processor
 
 
 class PNGCompressor:

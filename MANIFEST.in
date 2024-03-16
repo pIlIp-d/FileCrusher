@@ -1,0 +1,2 @@
+include *.md
+graft src/compressor/compressor_lib

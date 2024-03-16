@@ -2,8 +2,8 @@ import os
 import subprocess
 import sys
 
-from src.compressor.config import WINE_PATH, CPDFQUEEZE_PATH
-from src.compressor.processor import processor
+from src.file_crusher.config import WINE_PATH, CPDFQUEEZE_PATH
+from src.file_crusher.processor import processor
 
 
 class CPdfSqueezeCompressor:

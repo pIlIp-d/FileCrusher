@@ -1,8 +1,7 @@
 import os
 from unittest import TestCase
 
-from src.batch_processor import batch_process_files
-from src.compressor.cpdfsqueeze_compressor import CPdfSqueezeCompressor
+from src.file_crusher.cpdfsqueeze_compressor import CPdfSqueezeCompressor
 
 
 class TestCPDFCompressor(TestCase):

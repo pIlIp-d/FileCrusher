@@ -7,9 +7,9 @@ import os
 from PIL import Image
 from img2pdf import convert
 
-from src.compressor.config import TESSDATA_PREFIX, TESSERACT_PATH
-from src.compressor.file_operations import get_filename
-from src.compressor.processor import processor
+from src.file_crusher.config import TESSDATA_PREFIX, TESSERACT_PATH
+from src.file_crusher.file_operations import get_filename
+from src.file_crusher.processor import processor
 
 # OCR for pdf
 try:

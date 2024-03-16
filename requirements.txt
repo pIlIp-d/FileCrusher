@@ -1,0 +1,4 @@
+img2pdf>=0.5.1
+pillow>=10.2.0
+PyMuPDF>=1.23.25
+pytesseract>=0.3.10
