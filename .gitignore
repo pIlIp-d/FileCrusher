@@ -12,4 +12,4 @@ backend/django_app/media/
 .vscode/
 *.ods#
 build/
-*/*.egg-info
+*/*.egg-info/
