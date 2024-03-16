@@ -11,3 +11,5 @@ backend/django_app/media/
 .idea/
 .vscode/
 *.ods#
+build/
+*/*.egg-info
