@@ -1,55 +1,55 @@
 import os
 from unittest import TestCase
-
-from src.file_crusher.cpdfsqueeze_compressor import CPdfSqueezeCompressor
+import file_crusher
 
 
 class TestCPDFCompressor(TestCase):
-    folder_url = "path/to/test_folder/"
-    file_url = "path/to/test_file.pdf"
+    folder_url = os.path.join(os.path.dirname(__file__), "testdata")
+    source_file_url = os.path.join(folder_url, "test_file.pdf")
+    destination_file_url = os.path.join(folder_url, "test_file.pdf")
 
-    def test_constructor_extra_args_empty_string(self):
+    def test_extra_args_empty_string(self):
         # no error
-        CPdfSqueezeCompressor(extra_args="")
+        file_crusher.CPdfSqueezeCompressor(extra_args="").process_file(self.source_file_url, self.destination_file_url)
 
-    def test_constructor_extra_args_some_arguments(self):
-        compressor = CPdfSqueezeCompressor(extra_args="-upw password")
+    def test_extra_args_some_arguments(self):
+        compressor = file_crusher.CPdfSqueezeCompressor(extra_args="-upw password")
         self.assertEqual(compressor.extra_args, "-upw password")
 
-    def test_constructor_extra_args_incorrect(self):
+    def test_extra_args_incorrect(self):
         with self.assertRaises(ValueError):
-            CPdfSqueezeCompressor(extra_args="incorrect")
+            file_crusher.CPdfSqueezeCompressor(extra_args="incorrect")
 
-    def test_constructor_event_handlers_none(self):
-        compressor = CPdfSqueezeCompressor(event_handlers=None)
+    def test_event_handlers_none(self):
+        compressor = file_crusher.CPdfSqueezeCompressor(event_handlers=None)
         self.assertIsNone(compressor.event_handlers)
 
-    def test_constructor_event_handlers_one(self):
-        compressor = CPdfSqueezeCompressor(event_handlers=[EventHandler()])
+    def test_event_handlers_one(self):
+        compressor = file_crusher.CPdfSqueezeCompressor(event_handlers=[EventHandler()])
         self.assertEqual(len(compressor.event_handlers), 1)
 
-    def test_constructor_event_handlers_multiple(self):
-        compressor = CPdfSqueezeCompressor(event_handlers=[EventHandler(), AnotherEventHandler()])
+    def test_event_handlers_multiple(self):
+        compressor = file_crusher.CPdfSqueezeCompressor(event_handlers=[EventHandler(), AnotherEventHandler()])
         self.assertEqual(len(compressor.event_handlers), 2)
 
-    def test_constructor_event_handlers_wrong_type(self):
+    def test_event_handlers_wrong_type(self):
         with self.assertRaises(TypeError):
-            CPdfSqueezeCompressor(event_handlers="incorrect")
+            file_crusher.CPdfSqueezeCompressor(event_handlers="incorrect")
 
-    def test_constructor_event_handlers_mix(self):
+    def test_event_handlers_mix(self):
         with self.assertRaises(TypeError):
-            CPdfSqueezeCompressor(event_handlers=[EventHandler(), "incorrect"])
+            file_crusher.CPdfSqueezeCompressor(event_handlers=[EventHandler(), "incorrect"])
 
     def test_process_file_file_to_file(self):
-        compressor = CPdfSqueezeCompressor()
-        source_file = self.file_url
+        compressor = file_crusher.CPdfSqueezeCompressor()
+        source_file = self.source_file_url
         destination_path = os.path.join(self.folder_url, "compressed_file.pdf")
         compressor.process_file(source_file, destination_path)
         self.assertTrue(os.path.exists(destination_path))
 
     def test_process_file_file_to_folder(self):
-        compressor = CPdfSqueezeCompressor()
-        source_file = self.file_url
+        compressor = file_crusher.CPdfSqueezeCompressor()
+        source_file = self.source_file_url
         destination_folder = self.folder_url
         compressor.process_file(source_file, destination_folder)
         compressed_file_path = os.path.join(destination_folder, os.path.basename(source_file))

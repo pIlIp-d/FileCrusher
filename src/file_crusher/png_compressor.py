@@ -2,12 +2,12 @@ import os
 import sys
 import time
 
-from src.file_crusher.CompressionPostprocessor import CompressionPostprocessor
-from src.file_crusher.advpng_compressor import ADVPNGCompressor
-from src.file_crusher.file_operations import copy_file
-from src.file_crusher.pngcrush_compressor import PNGCrushCompressor
-from src.file_crusher.pngquant_compressor import PNGQuantCompressor
-from src.file_crusher.processor import processor
+from .CompressionPostprocessor import CompressionPostprocessor
+from .advpng_compressor import ADVPNGCompressor
+from .file_operations import copy_file, print_stats, get_file_size
+from .pngcrush_compressor import PNGCrushCompressor
+from .pngquant_compressor import PNGQuantCompressor
+from .processor import processor
 
 
 class PNGCompressor:
@@ -19,7 +19,7 @@ class PNGCompressor:
         """
          Compresses PNG images using a combination of compression tools.
          :param compression_mode: Speed of compression,
-            where 0 is the slowest (best quality) and 10 is the fastest.
+            where 0 is the slowest (best quality) and 5 is the fastest.
          :param event_handlers: A list of event handlers. (pre and postprocessors)
          :returns: None
          """
@@ -102,7 +102,11 @@ class PNGCompressor:
         if os.path.isdir(destination_path):
             destination_path = os.path.join(destination_path, os.path.basename(source_file))
 
-        current_source_file = source_file
+        start_file_size = get_file_size(source_file)
+
+        current_source_file = source_file[:-4] + ".temp.png"
+        copy_file(source_file, current_source_file)
+
         # run compress tools on single file
         if self.__pngquant is not None:
             new_destination = destination_path + ".pngquant.png"
@@ -124,3 +128,4 @@ class PNGCompressor:
         else:
             copy_file(current_source_file, destination_path)
             os.remove(current_source_file)
+        print_stats(start_file_size, get_file_size(destination_path))

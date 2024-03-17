@@ -3,8 +3,8 @@ import os
 # package name PyMuPdf
 import fitz
 
-from src.file_crusher.file_operations import get_filename
-from src.file_crusher.processor import processor
+from ..file_operations import get_filename
+from ..processor import processor
 
 
 class PdfToImageConverter:

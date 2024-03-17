@@ -1,2 +1,2 @@
 include *.md
-graft src/compressor/compressor_lib
+graft src/file_crusher/compressor_lib

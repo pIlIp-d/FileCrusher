@@ -29,9 +29,9 @@ def copy_file(from_file: str, to_file: str):
     if from_file == to_file:
         return
     # create directory if not already exists
-    output_dir = os.path.dirname(to_file)
+    output_dir = os.path.dirname(os.path.abspath(to_file))
     if not os.path.isdir(output_dir):
-        os.makedirs(output_dir)
+        os.makedirs(output_dir, exist_ok=True)
     shutil.copy(from_file, to_file)
 
 
@@ -60,10 +60,21 @@ def get_and_create_temp_folder() -> str:
         counter = uuid.uuid4()
         temp_folder = os.path.abspath(os.path.join("", "temporary_files", str(counter)))
         if not os.path.isdir(temp_folder):
-            os.mkdir(temp_folder)
+            os.makedirs(temp_folder, exist_ok=True)
             return temp_folder  # TODO not thread-safe
 
 
 def get_filename(full_path_to_file: str) -> str:
     filename_with_ending = os.path.basename(full_path_to_file)
     return re.split(r"\.[^.]*$", filename_with_ending)[0]
+
+
+def print_stats(orig: int, result: int) -> None:
+    if orig < 0:
+        raise ValueError("orig must be greater than or equal to 0")
+    if result < 0:
+        raise ValueError("result can't be less than 0")
+    orig_size = str(round(orig / 1000000, 2))
+    result_size = str(round(result / 1000000, 2))
+    percentage = 0 if orig == 0 else str(-1 * round(100 - (result / orig * 100), 2))
+    print(f"Compressed File from {orig_size}mb to {result_size}mb ({percentage}%)\n")

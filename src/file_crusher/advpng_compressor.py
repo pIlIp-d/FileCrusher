@@ -3,9 +3,9 @@ import subprocess
 import sys
 from subprocess import CalledProcessError
 
-from src.file_crusher.config import ADVPNG_PATH
-from src.file_crusher.file_operations import copy_file, check_if_valid_image, get_file_size
-from src.file_crusher.processor import processor
+from .config import ADVPNG_PATH
+from .file_operations import copy_file, check_if_valid_image, get_file_size
+from .processor import processor
 
 
 class ADVPNGCompressor:
@@ -59,6 +59,7 @@ class ADVPNGCompressor:
 
     @processor
     def process_file(self, source_file: str, destination_path: str) -> None:
+        print("advpng", source_file, destination_path)
         copy_file(source_file, destination_path)
         check_if_valid_image(source_file)
 
@@ -67,7 +68,6 @@ class ADVPNGCompressor:
         except CalledProcessError as cpe:
             print(repr(cpe), file=sys.stderr)
             print("processing failed at the advpng stage. (IGNORE)\n", file=sys.stderr)
-            pass
         except Exception as e:
             print(repr(e), file=sys.stderr)  # explicitly dont raise e
 

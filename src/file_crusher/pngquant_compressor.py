@@ -3,9 +3,9 @@ import subprocess
 import sys
 from subprocess import CalledProcessError
 
-from src.file_crusher.config import PNGQUANT_PATH
-from src.file_crusher.file_operations import compare_and_use_better_option, check_if_valid_image
-from src.file_crusher.processor import processor
+from .config import PNGQUANT_PATH
+from .file_operations import compare_and_use_better_option, check_if_valid_image
+from .processor import processor
 
 
 class PNGQuantCompressor:

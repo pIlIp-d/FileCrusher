@@ -5,15 +5,15 @@ import sys
 from enum import Enum
 from io import TextIOWrapper
 
-from src.batch_processor import batch_process_files_async
-from src.file_crusher.config import TESSERACT_PATH
-from src.file_crusher.converter.image_to_pdf_converter import ImagesToPdfConverter
-from src.file_crusher.converter.pdf_merger import merge_pdf_files
-from src.file_crusher.converter.pdf_to_image_converter import PdfToImageConverter
-from src.file_crusher.cpdfsqueeze_compressor import CPdfSqueezeCompressor
-from src.file_crusher.file_operations import get_file_size, get_files_in_folder, get_and_create_temp_folder
-from src.file_crusher.png_compressor import PNGCompressor
-from src.file_crusher.processor import processor
+from .batch_processor import batch_process_files_async
+from .config import TESSERACT_PATH
+from .converter.image_to_pdf_converter import ImagesToPdfConverter
+from .converter.pdf_merger import merge_pdf_files
+from .converter.pdf_to_image_converter import PdfToImageConverter
+from .cpdfsqueeze_compressor import CPdfSqueezeCompressor
+from .file_operations import get_file_size, get_files_in_folder, get_and_create_temp_folder, print_stats
+from .png_compressor import PNGCompressor
+from .processor import processor
 
 
 class PDFCompressor:
@@ -60,6 +60,7 @@ class PDFCompressor:
 
     @processor
     def process_file(self, source_file: str, destination_path: str) -> None:
+        start_file_size = get_file_size(source_file)
         temp_folder_01 = get_and_create_temp_folder()
         temp_folder_02 = get_and_create_temp_folder()
 
@@ -110,5 +111,6 @@ class PDFCompressor:
                     "However cpdf could compress it. -> No OCR was Created. (force ocr with option -f/--force-ocr)"
                     , file=sys.stderr
                 )
+        print_stats(start_file_size, get_file_size(destination_path))
         # load normal stdin from buffer
         sys.stdin = stdin_buffer
