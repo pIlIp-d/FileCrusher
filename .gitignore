@@ -13,4 +13,3 @@ backend/django_app/media/
 *.ods#
 build/
 */*.egg-info/
-*/__pycache__/
