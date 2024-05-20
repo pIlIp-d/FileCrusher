@@ -2,7 +2,7 @@ import os
 import shutil
 import tempfile
 
-from src.file_crusher.processor import processor
+from .processor import processor
 
 
 class PipelineProcessor:
