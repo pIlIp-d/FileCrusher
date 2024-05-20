@@ -59,7 +59,6 @@ class ADVPNGCompressor:
 
     @processor
     def process_file(self, source_file: str, destination_path: str) -> None:
-        print("advpng", source_file, destination_path)
         copy_file(source_file, destination_path)
         check_if_valid_image(source_file)
 

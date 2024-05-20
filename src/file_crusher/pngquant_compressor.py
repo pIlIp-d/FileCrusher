@@ -1,7 +1,5 @@
 import os
 import subprocess
-import sys
-from subprocess import CalledProcessError
 
 from .config import PNGQUANT_PATH
 from .file_operations import compare_and_use_better_option, check_if_valid_image
@@ -60,18 +58,9 @@ class PNGQuantCompressor:
     def process_file(self, source_file: str, destination_path: str):
         check_if_valid_image(source_file)
 
-        try:
-            subprocess.check_output(f'{self.pngquant_command} "{source_file}"',
-                                    stderr=subprocess.STDOUT, shell=True)
-            result_file = source_file[:-4] + '-comp.png'
-            compare_and_use_better_option(source_file, result_file, destination_path)
-            if os.path.exists(result_file):
-                os.remove(result_file)
-        except CalledProcessError as cpe:
-            if cpe.returncode in (self.__FILE_SIZE_INCREASED_ERROR, self.__IMAGE_QUALITY_BELOW_LIMIT_ERROR):
-                print("Skipping Error")
-                pass
-            else:
-                print("processing failed at the pngquant stage. (IGNORE)\n", file=sys.stderr)
-        except Exception as e:
-            print(repr(e), file=sys.stderr)  # dont raise e
+        subprocess.check_output(f'{self.pngquant_command} "{source_file}"',
+                                stderr=subprocess.STDOUT, shell=True)
+        result_file = source_file[:-4] + '-comp.png'
+        compare_and_use_better_option(source_file, result_file, destination_path)
+        if os.path.exists(result_file):
+            os.remove(result_file)

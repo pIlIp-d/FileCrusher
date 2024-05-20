@@ -37,15 +37,9 @@ class PNGCrushCompressor:
     def process_file(self, source_file: str, destination_path: str) -> None:
         check_if_valid_image(source_file)
 
-        try:
-            subprocess.check_output(rf'{self.pngcrush_command} "{source_file}" "{source_file[:-4] + "-comp.png"}"',
-                                    stderr=subprocess.STDOUT, shell=True)
-            result_file = source_file[:-4] + '-comp.png'
-            compare_and_use_better_option(source_file, result_file, destination_path)
-            if os.path.exists(result_file):
-                os.remove(result_file)
-        except CalledProcessError as cpe:
-            print(repr(cpe), file=sys.stderr)
-            print("processing failed at the pngcrush stage. (IGNORE)\n", file=sys.stderr)
-        except Exception as e:
-            print(repr(e), file=sys.stderr)  # dont raise e
+        subprocess.check_output(rf'{self.pngcrush_command} "{source_file}" "{source_file[:-4] + "-comp.png"}"',
+                                stderr=subprocess.STDOUT, shell=True)
+        result_file = source_file[:-4] + '-comp.png'
+        compare_and_use_better_option(source_file, result_file, destination_path)
+        if os.path.exists(result_file):
+            os.remove(result_file)
