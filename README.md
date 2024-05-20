@@ -56,11 +56,11 @@ apt install tesseract-ocr-deu -y
 ### CLI Usage
 ```bash
 # for pdfs
-python3 -m file-crusher input.pdf output.pdf --pdfcompressor
+python3 -m file_crusher input.pdf output.pdf --pdfcompressor
 # or for pngs
-python3 -m file-crusher input.png output.png --pngcompressor
+python3 -m file_crusher input.png output.png --pngcompressor
 # for other processors see
-python3 -m file-crusher --help
+python3 -m file_crusher --help
 ```
 
 ### Python Usage
