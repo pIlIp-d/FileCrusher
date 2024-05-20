@@ -57,6 +57,8 @@ class PNGQuantCompressor:
     @processor
     def process_file(self, source_file: str, destination_path: str):
         check_if_valid_image(source_file)
+        if not os.path.exists(os.path.dirname(destination_path)):
+            os.makedirs(os.path.dirname(destination_path), exist_ok=True)
 
         subprocess.check_output(f'{self.pngquant_command} "{source_file}"',
                                 stderr=subprocess.STDOUT, shell=True)

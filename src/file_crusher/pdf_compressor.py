@@ -80,6 +80,8 @@ class PDFCompressor:
         )
 
         # 4. merge pdf pages into pdf
+        if not os.path.exists(os.path.dirname(destination_path)):
+            os.makedirs(os.path.dirname(destination_path), exist_ok=True)
         merge_pdf_files(get_files_in_folder(temp_folder_02, "*.pdf"), destination_path)
 
         # clean up temp folders
@@ -105,7 +107,7 @@ class PDFCompressor:
             else:
                 print(
                     "File couldn't be compressed using crunch cpdf combi. "
-                    "However cpdf could compress it. -> No OCR was Created. (force ocr with option -f/--force-ocr)"
+                    "However cpdf could compress it. -> No OCR was Created."
                     , file=sys.stderr
                 )
         print_stats(start_file_size, get_file_size(destination_path))

@@ -1,6 +1,6 @@
 import argparse
 
-from src.file_crusher import CPdfSqueezeCompressor, PDFCompressor, PNGCompressor, PNGCrushCompressor, \
+from . import CPdfSqueezeCompressor, PDFCompressor, PNGCompressor, PNGCrushCompressor, \
     PNGQuantCompressor, ADVPNGCompressor
 
 

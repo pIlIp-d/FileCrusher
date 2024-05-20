@@ -101,6 +101,8 @@ class PNGCompressor:
     def process_file(self, source_file: str, destination_path: str) -> None:
         if os.path.isdir(destination_path):
             destination_path = os.path.join(destination_path, os.path.basename(source_file))
+        if not os.path.exists(os.path.dirname(destination_path)):
+            os.makedirs(os.path.dirname(destination_path), exist_ok=True)
 
         start_file_size = get_file_size(source_file)
         processor = PipelineProcessor(True, [self.__pngquant, self.__advcomp, self.__pngcrush])

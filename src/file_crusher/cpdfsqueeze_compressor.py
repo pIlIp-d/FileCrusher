@@ -44,9 +44,8 @@ class CPdfSqueezeCompressor:
     def process_file(self, source_file: str, destination_path: str) -> None:
         if not os.path.exists(source_file) or not source_file.endswith(".pdf"):  # TODO maybe switch to mime type
             raise ValueError("Only pdf files are accepted")
+        if not os.path.exists(os.path.dirname(destination_path)):
+            os.makedirs(os.path.dirname(destination_path), exist_ok=True)
 
         command = f'{self.__cpdfsqueeze_path} "{source_file}" "{destination_path}" {self.extra_args}'
-        try:
-            subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True)
-        except Exception as e:
-            print("[!] Compression Failed during CPdfSqueezeCompressor stage.", file=sys.stderr)
+        subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True)
