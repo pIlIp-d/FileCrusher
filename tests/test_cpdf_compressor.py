@@ -3,34 +3,78 @@ from unittest import TestCase
 import file_crusher
 
 
+class TestEventHandler:
+    def __init__(self):
+        self.preprocessor_calls = 0
+        self.postprocessor_calls = 0
+
+
+class TestEventHandlerPreProcessor(TestEventHandler):
+    def preprocess(self, _, __):
+        self.preprocessor_calls += 1
+
+
+class TestEventHandlerPostProcessor(TestEventHandler):
+    def postprocess(self, _, __):
+        self.postprocessor_calls += 1
+
+
+class TestEventHandlerPreAndPostProcessor(TestEventHandlerPreProcessor, TestEventHandlerPostProcessor):
+    pass
+
+
 class TestCPDFCompressor(TestCase):
-    folder_url = os.path.join(os.path.dirname(__file__), "testdata")
+    folder_url = os.path.join(os.path.dirname(__file__), "testdata.pdf")
     source_file_url = os.path.join(folder_url, "test_file.pdf")
     destination_file_url = os.path.join(folder_url, "test_file.pdf")
 
+    def _check_and_delete_destination_file(self):
+        self.assertTrue(os.path.isfile(self.destination_file_url))
+        self.assertTrue(os.path.getsize(self.source_file_url) > os.path.getsize(self.destination_file_url))
+        os.remove(self.destination_file_url)
+
     def test_extra_args_empty_string(self):
-        # no error
+        self.assertFalse(os.path.isfile(self.destination_file_url))
         file_crusher.CPdfSqueezeCompressor(extra_args="").process_file(self.source_file_url, self.destination_file_url)
+        self._check_and_delete_destination_file()
 
     def test_extra_args_some_arguments(self):
-        compressor = file_crusher.CPdfSqueezeCompressor(extra_args="-upw password")
-        self.assertEqual(compressor.extra_args, "-upw password")
+        self.assertFalse(os.path.isfile(self.destination_file_url))
+        file_crusher.CPdfSqueezeCompressor(extra_args="-upw testpw").process_file(self.source_file_url,
+                                                                                  self.destination_file_url)
+        self._check_and_delete_destination_file()
 
     def test_extra_args_incorrect(self):
         with self.assertRaises(ValueError):
-            file_crusher.CPdfSqueezeCompressor(extra_args="incorrect")
+            file_crusher.CPdfSqueezeCompressor(extra_args="incorrect").process_file(self.source_file_url,
+                                                                                    self.destination_file_url)
 
     def test_event_handlers_none(self):
-        compressor = file_crusher.CPdfSqueezeCompressor(event_handlers=None)
-        self.assertIsNone(compressor.event_handlers)
+        self.assertFalse(os.path.isfile(self.destination_file_url))
+        file_crusher.CPdfSqueezeCompressor(event_handlers=None).process_file(self.source_file_url,
+                                                                             self.destination_file_url)
+        self._check_and_delete_destination_file()
 
     def test_event_handlers_one(self):
-        compressor = file_crusher.CPdfSqueezeCompressor(event_handlers=[EventHandler()])
-        self.assertEqual(len(compressor.event_handlers), 1)
+        self.assertFalse(os.path.isfile(self.destination_file_url))
+        event_handler = TestEventHandlerPreAndPostProcessor()
+        file_crusher.CPdfSqueezeCompressor(event_handlers=[event_handler]).process_file(self.source_file_url,
+                                                                                        self.destination_file_url)
+        self._check_and_delete_destination_file()
+        self.assertTrue(event_handler.postprocessor_calls == 1)
+        self.assertTrue(event_handler.preprocessor_calls == 1)
 
     def test_event_handlers_multiple(self):
-        compressor = file_crusher.CPdfSqueezeCompressor(event_handlers=[EventHandler(), AnotherEventHandler()])
-        self.assertEqual(len(compressor.event_handlers), 2)
+        self.assertFalse(os.path.isfile(self.destination_file_url))
+        event_handler1 = TestEventHandlerPreAndPostProcessor()
+        event_handler2 = TestEventHandlerPreAndPostProcessor()
+        file_crusher.CPdfSqueezeCompressor(event_handlers=[event_handler1, event_handler2]).process_file(self.source_file_url,
+                                                                                        self.destination_file_url)
+        self._check_and_delete_destination_file()
+        self.assertTrue(event_handler1.postprocessor_calls == 1)
+        self.assertTrue(event_handler1.preprocessor_calls == 1)
+        self.assertTrue(event_handler2.postprocessor_calls == 1)
+        self.assertTrue(event_handler2.preprocessor_calls == 1)
 
     def test_event_handlers_wrong_type(self):
         with self.assertRaises(TypeError):
@@ -38,7 +82,8 @@ class TestCPDFCompressor(TestCase):
 
     def test_event_handlers_mix(self):
         with self.assertRaises(TypeError):
-            file_crusher.CPdfSqueezeCompressor(event_handlers=[EventHandler(), "incorrect"])
+            event_handler = TestEventHandlerPreAndPostProcessor()
+            file_crusher.CPdfSqueezeCompressor(event_handlers=[event_handler, "incorrect"])
 
     def test_process_file_file_to_file(self):
         compressor = file_crusher.CPdfSqueezeCompressor()
@@ -56,7 +101,12 @@ class TestCPDFCompressor(TestCase):
         self.assertTrue(os.path.exists(compressed_file_path))
 
     def test_cpdf_use_wine_on_linux_is_false(self):
-        raise NotImplementedError("TODO")
+        compressor = file_crusher.CPdfSqueezeCompressor()
+        source_file = "/home/user/Documents/education/Studium/Auslandssemester/FALL 2023 UNDERGRADUATE COURSES IN ENGLISH.pdf"
+        destination_folder = self.folder_url
+        compressor.process_file(source_file, destination_folder)
+        compressed_file_path = os.path.join(destination_folder, os.path.basename(source_file))
+        self.assertTrue(os.path.exists(compressed_file_path))
 
     def test_cpdf_use_wine_on_linux_is_true(self):
         raise NotImplementedError("TODO")
@@ -152,34 +202,32 @@ class TestCPDFCompressor(TestCase):
         # Clean up any files or folders created during testing
         pass
 
+    # "../test_data/testFile.pdf"
 
-# "../test_data/testFile.pdf"
-
-
-"""
-Constructor
-    use_wine_on_linux:
-        True
-        False
-
-    extra_args
-        ""
-        None
-        Something else like -upw
-        incorrect one
-
-    event_handlers
-        None
-        One
-        Multiple
-        []
-        wrong type of class
-        mix of wrong and correct classes
-
-process_file:
-    source_file:
-    destination_path:
-        file -> file
-        file -> folder
-        
-"""
+    """
+    Constructor
+        use_wine_on_linux:
+            True
+            False
+    
+        extra_args
+            ""
+            None
+            Something else like -upw
+            incorrect one
+    
+        event_handlers
+            None
+            One
+            Multiple
+            []
+            wrong type of class
+            mix of wrong and correct classes
+    
+    process_file:
+        source_file:
+        destination_path:
+            file -> file
+            file -> folder
+            
+    """

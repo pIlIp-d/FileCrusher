@@ -52,18 +52,6 @@ def get_files_in_folder(folder_path: str, ending: str = "*"):
     return glob(os.path.join(folder_path, ending), include_hidden=True)
 
 
-def get_and_create_temp_folder() -> str:
-    """
-    creates and returns a unique folder path inside the project directory (used for internal file storing)
-    """
-    while True:
-        counter = uuid.uuid4()
-        temp_folder = os.path.abspath(os.path.join("", "temporary_files", str(counter)))
-        if not os.path.isdir(temp_folder):
-            os.makedirs(temp_folder, exist_ok=True)
-            return temp_folder  # TODO not thread-safe
-
-
 def get_filename(full_path_to_file: str) -> str:
     filename_with_ending = os.path.basename(full_path_to_file)
     return re.split(r"\.[^.]*$", filename_with_ending)[0]

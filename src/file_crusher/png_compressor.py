@@ -1,10 +1,10 @@
 import os
 import sys
-import time
 
+from .pipeline_processor import PipelineProcessor
 from .CompressionPostprocessor import CompressionPostprocessor
 from .advpng_compressor import ADVPNGCompressor
-from .file_operations import copy_file, print_stats, get_file_size
+from .file_operations import print_stats, get_file_size
 from .pngcrush_compressor import PNGCrushCompressor
 from .pngquant_compressor import PNGQuantCompressor
 from .processor import processor
@@ -103,29 +103,6 @@ class PNGCompressor:
             destination_path = os.path.join(destination_path, os.path.basename(source_file))
 
         start_file_size = get_file_size(source_file)
-
-        current_source_file = source_file[:-4] + ".temp.png"
-        copy_file(source_file, current_source_file)
-
-        # run compress tools on single file
-        if self.__pngquant is not None:
-            new_destination = destination_path + ".pngquant.png"
-            self.__pngquant.process_file(current_source_file, new_destination)
-            os.remove(current_source_file)
-            current_source_file = new_destination
-            time.sleep(0)
-
-        if self.__advcomp is not None:
-            new_destination = destination_path + ".advcomp.png"
-            self.__advcomp.process_file(current_source_file, new_destination)
-            os.remove(current_source_file)
-            current_source_file = new_destination
-            time.sleep(0)
-
-        if self.__pngcrush is not None:
-            self.__pngcrush.process_file(current_source_file, destination_path)
-            os.remove(current_source_file)
-        else:
-            copy_file(current_source_file, destination_path)
-            os.remove(current_source_file)
+        processor = PipelineProcessor(True, [self.__pngquant, self.__advcomp, self.__pngcrush])
+        processor.process_file(source_file, destination_path)
         print_stats(start_file_size, get_file_size(destination_path))

@@ -2,6 +2,7 @@ import asyncio
 import os
 import shutil
 import sys
+import tempfile
 from enum import Enum
 from io import TextIOWrapper
 
@@ -11,7 +12,7 @@ from .converter.image_to_pdf_converter import ImagesToPdfConverter
 from .converter.pdf_merger import merge_pdf_files
 from .converter.pdf_to_image_converter import PdfToImageConverter
 from .cpdfsqueeze_compressor import CPdfSqueezeCompressor
-from .file_operations import get_file_size, get_files_in_folder, get_and_create_temp_folder, print_stats
+from .file_operations import get_file_size, get_files_in_folder, print_stats
 from .png_compressor import PNGCompressor
 from .processor import processor
 
@@ -61,28 +62,24 @@ class PDFCompressor:
     @processor
     def process_file(self, source_file: str, destination_path: str) -> None:
         start_file_size = get_file_size(source_file)
-        temp_folder_01 = get_and_create_temp_folder()
-        temp_folder_02 = get_and_create_temp_folder()
+        temp_folder_01 = tempfile.mkdtemp()
+        temp_folder_02 = tempfile.mkdtemp()
 
-        # create new empty folder for temporary files
-        shutil.rmtree(temp_folder_01, ignore_errors=True)
-        os.makedirs(temp_folder_01)
-
-        # split pdf into images that can be compressed using crunch
+        # 1. split pdf into images that can be compressed using crunch
         self.__pdf_to_image_converter.process_file(source_file, temp_folder_01)
 
-        # 1. compress all images in temp_folder
+        # 2. compress all images in temp_folder
         asyncio.run(
             batch_process_files_async(get_files_in_folder(temp_folder_01), temp_folder_02, self.__png_crunch_compressor)
         )
 
-        # 2. convert pngs to pdfs (as separate pages) and optionally apply OCR
+        # 3. convert pngs to pdfs (as separate pages) and optionally apply OCR
         asyncio.run(
             batch_process_files_async(get_files_in_folder(temp_folder_02), temp_folder_02,
                                       self.__image_to_pdf_converter)
         )
 
-        # 3. merge pdf pages into pdf
+        # 4. merge pdf pages into pdf
         merge_pdf_files(get_files_in_folder(temp_folder_02, "*.pdf"), destination_path)
 
         # clean up temp folders
