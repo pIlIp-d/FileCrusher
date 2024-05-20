@@ -5,6 +5,7 @@ Tired of bumping against upload size limits? This tool is perfect to compress PD
 While it can be slow, it really crushes your filesize and helps you to conquer the relentless 5MB upload limit.
 
 It works by splitting up a PDF into PNGs and compress these with advpng, pngcrush and pngquant. Then it combines them back into a PDF and applies a round of lossless pdf compression. Optionally it can apply OCR - Optical Character Recognition to make a scanned PDF searchable.
+Additionally, it exposes internal processors enabling you to use it as png compressor and file converter.
 
 ## Installation
 
@@ -29,7 +30,7 @@ and install wine for cpdfsqueeze
 apt install wine -y
 ```
 
-### 3. Install pytesseract for OCR
+### 3. optionally Install pytesseract for OCR
 
 #### For Windows via GUI
 Download and Install [Tesseract](https://github.com/UB-Mannheim/tesseract/wiki)
@@ -52,12 +53,35 @@ apt install tesseract-ocr-deu -y
 
 ## Usage
 
-```python3
-
+### CLI Usage
+```bash
+# for pdfs
+python3 -m file-crusher input.pdf output.pdf --pdfcompressor
+# or for pngs
+python3 -m file-crusher input.png output.png --pngcompressor
+# for other processors see
+python3 -m file-crusher --help
 ```
 
-## How it works
+### Python Usage
+```python3
+from file_crusher import PNGCompressor, PDFCompressor
 
+compressor = PNGCompressor()
+compressor.process_file("input.png", "output.png")
+
+# extreme mode
+compressor = PNGCompressor(0)
+compressor.process_file("input.png", "output.png")
+
+# fast mode
+compressor = PNGCompressor(5)
+compressor.process_file("input.png", "output.png")
+
+# also check the other options
+compressor = PDFCompressor(default_pdf_dpi=200)
+compressor.process_file("input.pdf", "output.pdf")
+```
 
 ## Disclaimer
 
