@@ -59,16 +59,20 @@ class ADVPNGCompressor:
 
     @processor
     def process_file(self, source_file: str, destination_path: str) -> None:
+        if os.path.isdir(destination_path):
+            destination_path = os.path.join(destination_path, os.path.basename(source_file))
         copy_file(source_file, destination_path)
         check_if_valid_image(source_file)
 
         try:
-            subprocess.check_output(f"{self.advpng_command} '{destination_path}'", stderr=subprocess.STDOUT, shell=True)
+            subprocess.check_output(f"{self.advpng_command} '{destination_path}'",
+                                    stderr=subprocess.STDOUT, shell=True)
         except CalledProcessError as cpe:
             print(repr(cpe), file=sys.stderr)
             print("processing failed at the advpng stage. (IGNORE)\n", file=sys.stderr)
         except Exception as e:
             print(repr(e), file=sys.stderr)  # explicitly dont raise e
 
-        if check_if_valid_image(destination_path, True) or get_file_size(source_file) < get_file_size(destination_path):
+        if (check_if_valid_image(destination_path, True)
+                or get_file_size(source_file) < get_file_size(destination_path)):
             copy_file(source_file, destination_path)

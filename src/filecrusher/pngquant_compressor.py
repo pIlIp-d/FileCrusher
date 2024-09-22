@@ -35,14 +35,16 @@ class PNGQuantCompressor:
         pngquant_path = PNGQUANT_PATH
         if not os.path.isfile(pngquant_path):
             linux_error = "Install it with 'sudo apt install pngquant'." if os.name != "nt" else ""
-            raise FileNotFoundError(rf"pngquant path not found at '{pngquant_path}'. {linux_error}")
+            raise FileNotFoundError(
+                rf"pngquant path not found at '{pngquant_path}'. {linux_error}")
 
         if speed < 0 or speed > 10:
             raise ValueError("speed needs to be a value in range 0-10")
         if min_quality < 0 or min_quality >= 100:
             raise ValueError("min_quality needs to be between 0 and 100")
         if max_quality < 0 or max_quality < min_quality:
-            raise ValueError("max_quality need to be greater than 0 and min_quality")
+            raise ValueError(
+                "max_quality need to be greater than 0 and min_quality")
 
         system_extra = "powershell.exe" if os.name == 'nt' else ""
         pngquant_options = " ".join((
@@ -57,12 +59,15 @@ class PNGQuantCompressor:
     @processor
     def process_file(self, source_file: str, destination_path: str):
         check_if_valid_image(source_file)
+        if os.path.isdir(destination_path):
+            destination_path = os.path.join(destination_path, os.path.basename(source_file))
         if not os.path.exists(os.path.dirname(destination_path)):
             os.makedirs(os.path.dirname(destination_path), exist_ok=True)
 
         subprocess.check_output(f'{self.pngquant_command} "{source_file}"',
                                 stderr=subprocess.STDOUT, shell=True)
         result_file = source_file[:-4] + '-comp.png'
-        compare_and_use_better_option(source_file, result_file, destination_path)
+        compare_and_use_better_option(
+            source_file, result_file, destination_path)
         if os.path.exists(result_file):
             os.remove(result_file)

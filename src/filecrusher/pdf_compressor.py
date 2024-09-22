@@ -57,10 +57,14 @@ class PDFCompressor:
             no_ocr,
             tesseract_language,
         )
-        self.__pdf_to_image_converter = PdfToImageConverter("png", default_pdf_dpi)
+        self.__pdf_to_image_converter = PdfToImageConverter(
+            "png", default_pdf_dpi)
 
     @processor
     def process_file(self, source_file: str, destination_path: str) -> None:
+        if os.path.isdir(destination_path):
+            destination_path = os.path.join(destination_path, os.path.basename(source_file))
+
         start_file_size = get_file_size(source_file)
         temp_folder_01 = tempfile.mkdtemp()
         temp_folder_02 = tempfile.mkdtemp()
@@ -70,7 +74,8 @@ class PDFCompressor:
 
         # 2. compress all images in temp_folder
         asyncio.run(
-            batch_process_files_async(get_files_in_folder(temp_folder_01), temp_folder_02, self.__png_crunch_compressor)
+            batch_process_files_async(get_files_in_folder(
+                temp_folder_01), temp_folder_02, self.__png_crunch_compressor)
         )
 
         # 3. convert pngs to pdfs (as separate pages) and optionally apply OCR
@@ -98,7 +103,8 @@ class PDFCompressor:
 
         if not self.__force_ocr and get_file_size(source_file) < get_file_size(destination_path):
             if self.__cpdf_squeeze_compressor is not None:
-                self.__cpdf_squeeze_compressor.process_file(source_file, destination_path)
+                self.__cpdf_squeeze_compressor.process_file(
+                    source_file, destination_path)
             if get_file_size(source_file) < get_file_size(destination_path):
                 print("File couldn't be compressed.", file=sys.stderr)
                 # copy source_file to destination_file
@@ -107,8 +113,7 @@ class PDFCompressor:
             else:
                 print(
                     "File couldn't be compressed using crunch cpdf combi. "
-                    "However cpdf could compress it. -> No OCR was Created."
-                    , file=sys.stderr
+                    "However cpdf could compress it. -> No OCR was Created.", file=sys.stderr
                 )
         print_stats(start_file_size, get_file_size(destination_path))
         # load normal stdin from buffer

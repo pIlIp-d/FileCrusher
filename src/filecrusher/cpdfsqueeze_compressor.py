@@ -1,6 +1,5 @@
 import os
 import subprocess
-import sys
 
 from .config import WINE_PATH, CPDFQUEEZE_PATH
 from .processor import processor
@@ -31,7 +30,8 @@ class CPdfSqueezeCompressor:
         self.__cpdfsqueeze_path = CPDFQUEEZE_PATH
 
         if not os.path.exists(self.__cpdfsqueeze_path):
-            raise ValueError(rf"cpdfsqueeze_path couldn't be found. '{self.__cpdfsqueeze_path}'")
+            raise ValueError(
+                rf"cpdfsqueeze_path couldn't be found. '{self.__cpdfsqueeze_path}'")
 
         # optionally add wine to the command on Linux
         if os.name != "nt" and use_wine_on_linux:
@@ -42,7 +42,10 @@ class CPdfSqueezeCompressor:
 
     @processor
     def process_file(self, source_file: str, destination_path: str) -> None:
-        if not os.path.exists(source_file) or not source_file.endswith(".pdf"):  # TODO maybe switch to mime type
+        if os.path.isdir(destination_path):
+            destination_path = os.path.join(destination_path, os.path.basename(source_file))
+        # TODO maybe switch to mime type
+        if not os.path.exists(source_file) or not source_file.endswith(".pdf"):
             raise ValueError("Only pdf files are accepted")
         if not os.path.exists(os.path.dirname(destination_path)):
             os.makedirs(os.path.dirname(destination_path), exist_ok=True)

@@ -1,7 +1,3 @@
-import os.path
-import re
-
-
 class CompressionPostprocessor:
     __compressor_name: str
 

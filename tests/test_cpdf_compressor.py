@@ -101,12 +101,11 @@ class TestCPDFCompressor(TestCase):
         self.assertTrue(os.path.exists(compressed_file_path))
 
     def test_cpdf_use_wine_on_linux_is_false(self):
-        compressor = file_crusher.CPdfSqueezeCompressor()
-        source_file = "/home/user/Documents/education/Studium/Auslandssemester/FALL 2023 UNDERGRADUATE COURSES IN ENGLISH.pdf"
-        destination_folder = self.folder_url
-        compressor.process_file(source_file, destination_folder)
-        compressed_file_path = os.path.join(destination_folder, os.path.basename(source_file))
-        self.assertTrue(os.path.exists(compressed_file_path))
+        compressor = file_crusher.PDFCompressor(compression_mode=1, default_pdf_dpi=200, force_ocr=True)
+        source_file = "/home/user/Phone/tmp_BAFÖG/tmp2/Bafög 2023,2024.pdf"
+        destination_file = "/home/user/Phone/tmp_BAFÖG/tmp2/Bafög 2023,2024_new.pdf"
+        compressor.process_file(source_file, destination_file)
+        self.assertTrue(os.path.exists(destination_file))
 
     def test_cpdf_use_wine_on_linux_is_true(self):
         raise NotImplementedError("TODO")
